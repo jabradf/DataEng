@@ -1,0 +1,45 @@
+Performance Metrics:
+db.<collection>.find(...).explain(<verbose>)
+
+explain takes: "queryPlanner", "executionStats", and "allPlansExecution".
+
+eg: db.students.find({ year_abroad: { $gt: 2019 }}).explain('executionStats');
+
+
+------------
+Creating indexes, single field.
+db.<collection>.createIndex({ <keys>, <options>, <commitQuorum>)}
+simplified: 
+db.<collection>.createIndex({ <field>: <type> });
+
+eg: db.students.createIndex({ year_abroad: 1 });	1 sorts the index in ascending order, -1 for descending
+
+Compound index:
+db.<collection>.createIndex({ 
+  <field>: <type>, 
+  <field2>: <type>, 
+  …
+})
+
+
+Multikey index
+Works the same as compound index, where it will index array entries using the name.
+Eg: db.listingsAndReviews.createIndex({grades:1})
+
+
+Multikey index on compound fields:
+It can be done, but only one of the indexed fields can be an array.
+
+
+Deleting indexes
+list the curent indexes: db.<collection>.getIndexes();
+db.<collection.dropIndex(<indexName>);
+
+
+* Partial Indexes only index documents in a collection that meet specific filter criteria. By indexing a subset of a collection’s documents, partial indexes consume less storage and have improved performance.
+
+* Sparse Indexes only index documents that include the specified index field. Any documents that do not have the field will be excluded from the index. Much like partial indexes, these indexes can use significantly less storage and have relatively improved performance compared to non-sparse indexes.
+
+* TTL Indexes are special single-field indexes that MongoDB can use to automatically remove documents from a collection after a certain amount of time or at a specific clock time.
+
+* Unique Indexes enforce unique values for the indexed fields. Creating a unique index on a collection will restrict the insertion or update of documents where the indexed field’s value matches an existing value in the index.

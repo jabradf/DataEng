@@ -1,0 +1,50 @@
+Aggregation
+
+An example of aggregation is creating a pipeline stage as an array.
+MongoDB requires that inside of the aggregate() method, our first argument is an array containing the pipeline stages we use.
+
+db.<collection>.aggregate()
+
+An example:
+Consider the sample document:
+{ 
+  student_id: 94204,
+  first_name: "Sun",
+  last_name: "Ko",
+  grade_level: 6,
+  test_scores: [99, 97. 96, 99],
+  average_test_score: 98.65
+}
+
+We can create an aggregate like so:
+
+db.students.aggregate([
+  {
+    // First stage
+    $match: {grade_level: 6, average_test_score: {$gt: 97}}
+  },
+  { 
+    // Second Stage
+    $sort: { first_name: 1} 
+  },
+  { 
+    // Third Stage
+    // There is a prefix with a $ to indicate it is a field path. Field paths are used to access a document’s fields inside of an expression
+    $addFields:  {
+      highest_score: { $max: "$test_scores" }  
+    }
+  },
+  {
+    // Fourth Stage, create a new collection using $out stage
+    $out : "candidates"
+  }
+])
+
+
+
+-------------
+More places to learn about Mongo:
+https://learn.mongodb.com/catalog
+https://learn.mongodb.com/learning-paths/mongodb-python-developer-path
+https://university.mongodb.com/courses/M320/about
+https://university.mongodb.com/courses/M121/about

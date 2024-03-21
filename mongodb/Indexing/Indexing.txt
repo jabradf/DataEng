@@ -1,0 +1,6 @@
+Indexing
+db.<collection>.find(...).explain(<verbose>)
+
+explain takes: "queryPlanner", "executionStats", and "allPlansExecution".
+
+eg: db.students.find({ year_abroad: { $gt: 2019 }}).explain('executionStats');

@@ -1,0 +1,86 @@
+The R in CRUD (Read):
+db.<collection>.findOne({ <key>: <value> })
+
+
+The C in CRUD (Create):
+
+Basic write using the .insertOne() method:
+db.<collection>.insertOne( <new document>, { <writeConcern/parameter>: <document>, } };
+
+eg: db.listingsAndReviews.insertOne({name:"Elvins", cuisine:"American", restaurant_id:"40564243"})
+
+
+.insertMany() method to, insert many documents:
+db.<collection>.insertMany([{doc1}, {doc2}, ..])
+
+
+
+borough: "Manhattan", cuisine: "American", restaurant_id: "49246215"}, {name: "Carmines", borough: "Manhattan", cuisine: "Italian", restaurant_id: "48259401"}
+
+
+----------------------------
+The U in CRUD (Update):
+db.<collection>.updateOne({ <key1>: "<value>" }, {$set: {<key2>: <value>}, <options> });	
+key1 and key 2 can be the same. Similar to SQL where you update a value based on the search key.
+
+update array:
+db.<collection.updateOne(
+  { <key>: "<value>" }, 
+  { $set: {"<array>.<index>": <value> }}
+)
+
+$push method: add data to end of array:
+db.<collection>.updateOne(
+  <filter>,
+  { $push: { <field1>: <value1>, ... } }
+);
+
+(if the pushed element does not yet exist, it is created as an array)
+Example: db.listingsAndReviews.updateOne({name:"Cafe Bar"}, {$push: {grades:{date: new Date(), grade: "B", score:81} }})
+
+upsert method:
+db.<collection>.updateOne(
+  <filter>, 
+  <update>, 
+  { upsert: <boolean> }
+);
+example: db.listingsAndReviews.updateOne({name:"Vinnys"}, {$set:{borough:"Queens", cuisine:"Italian"}}, {upsert:true})
+
+
+updateMany:
+db.<collection>.updateMany(
+  { <key>: <value>},
+  { $set: { <key>: <newValue>}}
+)
+
+
+findAndModify (this method returns the document, updateMany does not):
+db.<collection>.findAndModify({
+  query: {<document>},
+  update: {<document>},
+  new: <boolean>,
+  upsert: <boolean>,
+  ...
+});		(new = returns the modified doc instead of original.)
+
+example: db.listingsAndReviews.findAndModify({ query:{name:"Jacobs Bagels"}, update:{name:"Jacobs Bagels", cuisine:"Jewish/Kosher", borough:"Brooklyn"}, new:true, upsert:true })
+
+
+----------------------------
+The D in CRUD (Delete):
+deleteOne(<filter>, <options>)
+eg: db.monsters.deleteOne({ age: 95 });
+
+db.<collection>.deleteMany(<filter>, <options>);
+eg: db.monsters.deleteMany({ type: "Hydra" });
+
+This command deletes the record, and replaces it with given data. This effectively removes other fields from the record:
+db.<collection>.replaceOne(<filter>, <replacement>, <options>);
+eg: db.employees.replaceOne({ name: "Rhoit Kohli" }, { name: "Rohit Kohli", position: "N/A" });
+
+
+
+
+
+
+

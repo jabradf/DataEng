@@ -1,0 +1,70 @@
+mongo command line supports tab completion; use it!
+
+show dbs	-	list existing databases
+use <db>	-	navigate to <db>
+db		-	show current selected db
+show collections	-	 does what is says
+
+reading
+-------------
+db.<collection>.find() - returns first batch in the <collection>, type "it" to iterate through
+db.<collection>.find({key1: 'value1', keyN: 'valueN'})	-	find entries matching the key:value pair
+db.<collection>.find({'parent.childKey': 'value1'})	-	find entries matching the embedded file key:value pair
+
+comparisons
+-------------
+db.<collection>.find( { <field>: { $gt: <value> } } )	-	Ensure value matches the type, eg in quotes if it's a string.
+							-	Compare with standards; $eq, le, gte, and, not, exists, regex and more (https://www.mongodb.com/docs/manual/reference/operator/query/#comparison)
+
+Compound find example:
+db.listingsAndReviews.find({cuisine: "Chinese", restaurant_id:{$gt:"42000000"}})
+
+sorting
+-------------
+db.<collection>.find().sort({ "<field>":<value>, "<second_field>": <second_value>, ...} )	-	<value> is sort order 1 for asc, -1 for desc
+
+
+query projection (filtering)
+-------------
+db.<collection>.find( <query>, { <projection_field_1>: <0 or 1>, <projection_field_2>: <0 or 1>, … } ) - fields are keys, and 1 is to display it. By default everything is included and need to be set to 0 to not be returned.
+
+eg: collection.find({}, {_id: 0 })  
+
+Other items
+-------------
+- The .count() method returns the number of documents that match a query.
+- The .limit() method can be chained to the .find() method, and specifies the maximum number of documents a query will output.
+- The $exists operator can be included in a query filter to only match documents that contain the given field.
+- The $ne operator helps check if a field is not equal to a specified value.
+- The $and and $or operators help perform AND or OR logic operators.
+- if you are looking for a way to make query outputs look a bit more “pretty”, you can use the .pretty() method!
+
+- find exact, match across and array:
+db.<collection>.find({'key': [value1, value2, ...]})
+- find one match inside array
+db.<collection>.find({'key': value1})
+- match regardless of order:
+db.<collection>.find({ 'key': { $all: [ "value1", "value2" ] } })
+- change the operator $all to any other match type, $gt, etc
+
+- match all conditions:
+db.<collection>.find({'key':{ $elemMatch: { condition1:value, condition2:value} }})	(use $gte, $lt, etc as conditions)
+
+------------------
+Further example:
+for the following structure, find the count of streamers with subscribers:
+
+{
+    _id: ObjectId("62e034df5f3eac5879efc235"),
+    streamer: 'MulganJape',
+    channel_name: 'Edge Of The Invaders',
+    avg_views: 3389,
+    followers: [
+      { follower: 'Inaniloquent', is_subscribed: false },
+      { follower: 'Bumbledom', is_subscribed: false },
+      { follower: 'Iceblink', is_subscribed: true },
+      { follower: 'Runagate', is_subscribed: false }
+    ]
+  }
+
+answer: db.channels.find({followers: {$elemMatch: {is_subscribed: true} }}).count()
