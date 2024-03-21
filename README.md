@@ -1,2 +1,3 @@
 # DataEng
-Notes and code from Data Eng practices
+Notes and code from the www.coursera.com Data Engineering course.
+
